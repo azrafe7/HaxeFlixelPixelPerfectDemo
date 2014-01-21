@@ -10,6 +10,7 @@ import flash.display.BitmapData;
 import flixel.util.FlxBitmapDataPool;
 import flixel.util.FlxCollision;
 
+using StringTools;
 
 class PlayState extends FlxState
 {	
@@ -17,7 +18,7 @@ class PlayState extends FlxState
 	var players:Array<FlxSprite> = new Array<FlxSprite>();
 	var player:FlxSprite;
 	
-	var bmd:BitmapData = new BitmapData(100, 20);
+	var bmd:BitmapData = new BitmapData(30, 10);
 	
 	var infoText:flixel.text.FlxText;
 	var INFO:String = "collisions: |hits|\n\n[W/S]           num players: |players|\n[ARROWS]    move\n[R]               random\n[SPACE]       toggle rotation";
@@ -128,7 +129,7 @@ class PlayState extends FlxState
 	
 	public function updateInfo():Void 
 	{
-		infoText.text = INFO.split("|players|").join(Std.string(nPlayers)).split("|hits|").join(Std.string(nCollisions));
+		infoText.text = INFO.replace("|players|", Std.string(nPlayers)).replace("|hits|", Std.string(nCollisions));
 	}
 	
 }
