@@ -21,9 +21,16 @@ class PlayState extends FlxState
 	var bmd:BitmapData = new BitmapData(30, 10);
 	
 	var infoText:flixel.text.FlxText;
-	var INFO:String = "collisions: |hits|\n\n[W/S]           num players: |players|\n[ARROWS]    move\n[R]               random\n[SPACE]       toggle rotation";
+	var INFO:String = "collisions: |hits|\n\n" + 
+					  "[W/S]           num players: |players|\n" +
+					  "[A/D]           alpha tolerance: |alpha|\n" +
+					  "[ARROWS]    move\n" +
+					  "[R]               random\n" +
+					  "[SPACE]       toggle rotation";
+					  
 	var nCollisions:Int = 0;
 	
+	var alphaTolerance:Int = 128;
 	var rotate:Bool = true;
 	
 	
@@ -41,6 +48,7 @@ class PlayState extends FlxState
 		
 		p.loadGraphic(bmd);
 		p.angle = Math.random() * 360;
+		if (players.length > 1) p.alpha = .3 + Math.random() * .7;
 		
 		players.push(p);
 		add(p);
@@ -85,11 +93,15 @@ class PlayState extends FlxState
 				if (p == player) continue;
 				p.x = Math.random() * FlxG.width;
 				p.y = Math.random() * FlxG.height;
+				p.alpha = .3 + Math.random() * .7;
 			}
 		}
 	
 		if (FlxG.keyboard.justPressed("W", "Z")) nPlayers++;
 		if (FlxG.keyboard.justPressed("S")) nPlayers = Std.int(Math.max(nPlayers - 1, 2));
+		
+		if (FlxG.keyboard.pressed("D")) alphaTolerance = Std.int(Math.min(alphaTolerance + 1, 255));
+		if (FlxG.keyboard.pressed("A", "Q")) alphaTolerance = Std.int(Math.max(alphaTolerance - 1, 1));
 		
 		// add/remove players
 		if (nPlayers != players.length) {
@@ -115,7 +127,7 @@ class PlayState extends FlxState
 				if (i == j) continue;
 				
 				var p2 = players[j];
-				if (FlxCollision.pixelPerfectCheck(p1, p2, 255)) {
+				if (FlxCollision.pixelPerfectCheck(p1, p2, alphaTolerance)) {
 					collides = true;
 					nCollisions++;
 					break;
@@ -129,7 +141,9 @@ class PlayState extends FlxState
 	
 	public function updateInfo():Void 
 	{
-		infoText.text = INFO.replace("|players|", Std.string(nPlayers)).replace("|hits|", Std.string(nCollisions));
+		infoText.text = INFO.replace("|players|", Std.string(nPlayers))
+			.replace("|alpha|", Std.string(alphaTolerance))
+			.replace("|hits|", Std.string(nCollisions));
 	}
 	
 }
